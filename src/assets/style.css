@@ -1,0 +1,29 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+:root {
+   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+   line-height: 1.5;
+   font-weight: 400;
+}
+
+body {
+   background-color: hsl(223, 19%, 93%);
+   padding: 20px 0;
+   min-height: 100vh;
+}
+
+@layer components {
+   .btn {
+      @apply flex items-center gap-2 cursor-pointer  hover:opacity-60 transition-all;
+   }
+
+   .form {
+      @apply sm:flex sm:flex-row items-start gap-3 p-5 bg-white w-full rounded-xl;
+   }
+
+   .textarea {
+      @apply py-2 px-4 resize-none w-full h-32 border rounded-md text-gray-500 outline-indigo-500;
+   }
+}
