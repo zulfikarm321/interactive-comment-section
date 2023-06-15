@@ -36,17 +36,17 @@ export default {
 
       commentHandle(event) {
          const commentCursorPosition = this.$refs.commentInput.selectionStart;
+         const commentText = this.$refs.commentInput.value;
+         const firstSpaceIndex = commentText.indexOf(' ');
 
          if (
-            commentCursorPosition === this.usernameLength &&
+            commentCursorPosition === firstSpaceIndex + 1 &&
             event.key == 'Backspace'
          ) {
             event.preventDefault();
-         } else if (commentCursorPosition < this.usernameLength) {
+         } else if (commentCursorPosition < firstSpaceIndex + 1) {
             event.preventDefault();
          }
-
-         console.log(this.$refs.commentInput.value);
       },
 
       replyHandle(event) {
