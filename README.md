@@ -1,7 +1,7 @@
 ### Links
 
 -  Solution URL: [Solution URL](https://www.frontendmentor.io/solutions/interactive-comments-section-with-vue-js-and-tailwind-css-vtxYeeAPYK)
--  Live Site URL: [live page](https://interactive-comment-section-15iuruy2o-zulfikarm321.vercel.app/)
+-  Live Site URL: [live page](https://interactive-comment-section-eosin.vercel.app/)
 
 ### The challenge
 
