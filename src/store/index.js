@@ -76,6 +76,14 @@ const store = new createStore({
    },
    mutations: {
       // Definisikan mutations untuk mengubah state
+      CHANGE_USER(state, value) {
+         state.currentUser.image = {
+            png: `/images/avatars/image-${value}.png`,
+            webp: `/images/avatars/image-${value}.webp`
+         };
+         state.currentUser.username = value;
+      },
+
       ADD_COMMENT(state, comment) {
          if (state.comments.find((val) => val.id === comment.id)) {
             comment.id = comment.id + 1;
@@ -163,6 +171,9 @@ const store = new createStore({
    },
    actions: {
       // Definisikan actions untuk melakukan tugas async dan memanggil mutations
+      changeUser({ commit }, value) {
+         commit('CHANGE_USER', value);
+      },
       addComment({ commit }, comment) {
          commit('ADD_COMMENT', comment);
       },

@@ -10,7 +10,11 @@ export default {
       ...mapState(['comments', 'currentUser'])
    },
    methods: {
-      ...mapActions(['addComment']),
+      ...mapActions(['addComment', 'changeUser']),
+
+      selectUser(event) {
+         this.changeUser(event.target.value);
+      },
 
       addNewComment() {
          // Ambil nilai teks komentar dari textarea
@@ -39,6 +43,17 @@ export default {
 
 <template>
    <div class="container mx-auto flex flex-col min-h-screen justify-center">
+      <div class="mb-5">
+         <select
+            class="py-2 px-4 rounded-lg font-bold cursor-pointer"
+            @change="selectUser"
+         >
+            <option value="juliusomo">juliusomo</option>
+            <option value="amyrobson">amyrobson</option>
+            <option value="maxblagun">maxblagun</option>
+            <option value="ramsesmiron">ramsesmiron</option>
+         </select>
+      </div>
       <div
          class="comment-section flex items-end flex-col"
          v-for="comment in comments"
