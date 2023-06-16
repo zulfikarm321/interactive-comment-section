@@ -82,6 +82,7 @@ const store = new createStore({
             webp: `/images/avatars/image-${value}.webp`
          };
          state.currentUser.username = value;
+         console.log(state.comments);
       },
 
       ADD_COMMENT(state, comment) {

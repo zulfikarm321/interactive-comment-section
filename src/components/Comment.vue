@@ -69,6 +69,7 @@ export default {
          // Ambil nilai teks komentar dari textarea
          const commentText = this.$refs.commentInput.value;
          const firstSpaceIndex = commentText.indexOf(' ');
+         const user = this.currentUser;
 
          const trimmedCommentText = commentText
             .substring(firstSpaceIndex + 1)
@@ -84,7 +85,7 @@ export default {
             createdAt: 'just now',
             score: 0,
             replyingTo: this.data.user.username,
-            user: this.currentUser,
+            user: JSON.parse(JSON.stringify(user)),
             username: this.currentUser.username
          };
 

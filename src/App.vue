@@ -14,11 +14,13 @@ export default {
 
       selectUser(event) {
          this.changeUser(event.target.value);
+         console.log(this.comments);
       },
 
       addNewComment() {
          // Ambil nilai teks komentar dari textarea
          const commentText = this.$refs.commentInput.value;
+         const user = this.currentUser;
 
          // Buat objek comment baru
          const newComment = {
@@ -26,7 +28,7 @@ export default {
             content: commentText,
             createdAt: 'just now',
             score: 0,
-            user: this.currentUser,
+            user: JSON.parse(JSON.stringify(user)),
             replies: []
          };
 
@@ -35,7 +37,6 @@ export default {
 
          // Reset nilai textarea setelah menambahkan komentar
          this.$refs.commentInput.value = '';
-         console.log(this.comments);
       }
    }
 };
