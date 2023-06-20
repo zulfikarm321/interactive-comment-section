@@ -15,15 +15,23 @@ body {
 }
 
 @layer components {
+   /* 
+   COMMENT CARD
+   */
+
+   .comment-card {
+      @apply mb-5 bg-white flex items-start gap-5 rounded-xl p-5;
+   }
+
+   .score-control {
+      @apply items-center gap-3 p-3 rounded-lg bg-slate-100;
+   }
+
+   /* 
+   COMMENT CARD
+   */
+
    .btn {
-      @apply flex items-center gap-2 cursor-pointer  hover:opacity-60 transition-all;
-   }
-
-   .form {
-      @apply sm:flex sm:flex-row items-start gap-3 p-5 bg-white w-full rounded-xl;
-   }
-
-   .textarea {
-      @apply py-2 px-4 resize-none w-full h-32 border rounded-md text-gray-500 outline-indigo-500;
+      @apply flex items-center gap-2 font-bold;
    }
 }

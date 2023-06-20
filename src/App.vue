@@ -1,109 +1,50 @@
 <script>
-import { mapState, mapActions } from 'vuex';
-import Comment from './components/Comment.vue';
+import { mapState, mapActions, mapGetters } from 'vuex';
+
+import CommentCard from './components/CommentCard.vue';
+import FormComment from './components/FormComment.vue';
+import SelectUser from './components/SelectUser.vue';
 
 export default {
    components: {
-      Comment
+      CommentCard,
+      FormComment,
+      SelectUser
    },
    computed: {
-      ...mapState(['comments', 'currentUser'])
+      ...mapState(['comments', 'user'])
    },
    methods: {
-      ...mapActions(['addComment', 'changeUser']),
-
-      selectUser(event) {
-         this.changeUser(event.target.value);
-         console.log(this.comments);
-      },
-
-      addNewComment() {
-         // Ambil nilai teks komentar dari textarea
-         const commentText = this.$refs.commentInput.value;
-         const user = this.currentUser;
-
-         // Buat objek comment baru
-         const newComment = {
-            id: this.comments.length + 1,
-            content: commentText,
-            createdAt: 'just now',
-            score: 0,
-            user: JSON.parse(JSON.stringify(user)),
-            replies: []
-         };
-
-         // Panggil action `addComment` dengan parameter komentar baru
-         this.addComment(newComment);
-
-         // Reset nilai textarea setelah menambahkan komentar
-         this.$refs.commentInput.value = '';
-      }
+      ...mapActions(['setCurrentUser'])
    }
 };
 </script>
 
 <template>
-   <div class="container mx-auto flex flex-col min-h-screen justify-center">
-      <div class="mb-5">
-         <select
-            class="py-2 px-4 rounded-lg font-bold cursor-pointer"
-            @change="selectUser"
-         >
-            <option value="juliusomo">juliusomo</option>
-            <option value="amyrobson">amyrobson</option>
-            <option value="maxblagun">maxblagun</option>
-            <option value="ramsesmiron">ramsesmiron</option>
-         </select>
-      </div>
+   <div
+      class="container mx-auto flex flex-col min-h-screen justify-center relative"
+   >
+      <SelectUser />
       <div
-         class="comment-section flex items-end flex-col"
+         class="comment-section flex flex-col items-end"
          v-for="comment in comments"
       >
-         <div class="comment w-full">
-            <Comment :data="comment" />
-         </div>
-         <div class="reply w-[95%] sm:w-[90%] flex items-end flex-col relative">
-            <div class="line h-full absolute -left-4 sm:-left-8 pb-5">
-               <div class="w-[2px] bg-gray-200 h-full"></div>
-            </div>
-            <Comment
-               v-for="child in comment.replies"
-               :data="child"
-               :parrentId="comment.id"
+         <CommentCard
+            :key="comment.id"
+            :commentId="comment.id"
+            :data="comment"
+            :isParrent="true"
+         />
+         <div class="replies w-[90%]">
+            <CommentCard
+               v-for="reply in comment.replies"
+               :key="reply.id"
+               :commentId="comment.id"
+               :data="reply"
+               :isParrent="false"
             />
          </div>
       </div>
-      <form class="form" @submit.prevent="addNewComment">
-         <img
-            :src="currentUser.image.webp"
-            alt="avatar image"
-            class="hidden sm:block w-10"
-         />
-         <textarea
-            placeholder="Add a comment..."
-            class="py-2 px-4 resize-none w-full h-20 border rounded-md text-gray-500 outline-indigo-500"
-            ref="commentInput"
-            required
-         ></textarea>
-         <button
-            class="btn hidden sm:block bg-indigo-500 text-white py-2 px-6 rounded-lg"
-         >
-            SEND
-         </button>
-
-         <div
-            class="bottom mobile-screen flex justify-between items-center mt-3"
-         >
-            <img
-               :src="currentUser.image.webp"
-               alt="avatar image"
-               class="sm:hidden w-10"
-            /><button
-               class="btn sm:hidden bg-indigo-500 text-white py-2 px-6 rounded-lg"
-            >
-               SEND
-            </button>
-         </div>
-      </form>
+      <FormComment :type="'COMMENT'" />
    </div>
 </template>

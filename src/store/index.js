@@ -1,215 +1,173 @@
 import { createStore } from 'vuex';
 
+import { getItem, setItem } from '../utills/localStorageUtils';
+import { initialUser, initialComments } from '../utills/initialData';
+
 const store = new createStore({
    state: {
       // Definisikan state aplikasi di sini
-      currentUser: {
-         image: {
-            png: '/images/avatars/image-juliusomo.png',
-            webp: '/images/avatars/image-juliusomo.webp'
-         },
-         username: 'juliusomo'
-      },
-      comments: [
-         {
-            id: 1,
-            content:
-               "Impressive! Though it seems the drag feature could be improved. But overall it looks incredible. You've nailed the design and the responsiveness at various breakpoints works really well.",
-            createdAt: '1 month ago',
-            score: 12,
-            user: {
-               image: {
-                  png: '/images/avatars/image-amyrobson.png',
-                  webp: '/images/avatars/image-amyrobson.webp'
-               },
-               username: 'amyrobson'
-            },
-            replies: []
-         },
-         {
-            id: 2,
-            content:
-               "Woah, your project looks awesome! How long have you been coding for? I'm still new, but think I want to dive into React as well soon. Perhaps you can give me an insight on where I can learn React? Thanks!",
-            createdAt: '2 weeks ago',
-            score: 5,
-            user: {
-               image: {
-                  png: '/images/avatars/image-maxblagun.png',
-                  webp: '/images/avatars/image-maxblagun.webp'
-               },
-               username: 'maxblagun'
-            },
-            replies: [
-               {
-                  id: 1,
-                  content:
-                     "If you're still new, I'd recommend focusing on the fundamentals of HTML, CSS, and JS before considering React. It's very tempting to jump ahead but lay a solid foundation first.",
-                  createdAt: '1 week ago',
-                  score: 4,
-                  replyingTo: 'maxblagun',
-                  user: {
-                     image: {
-                        png: '/images/avatars/image-ramsesmiron.png',
-                        webp: '/images/avatars/image-ramsesmiron.webp'
-                     },
-                     username: 'ramsesmiron'
-                  }
-               },
-               {
-                  id: 2,
-                  content:
-                     "I couldn't agree more with this. Everything moves so fast and it always seems like everyone knows the newest library/framework. But the fundamentals are what stay constant.",
-                  createdAt: '2 days ago',
-                  score: 2,
-                  replyingTo: 'ramsesmiron',
-                  user: {
-                     image: {
-                        png: '/images/avatars/image-juliusomo.png',
-                        webp: '/images/avatars/image-juliusomo.webp'
-                     },
-                     username: 'juliusomo'
-                  }
-               }
-            ]
-         }
-      ]
+      currentUser: null,
+      comments: []
    },
    mutations: {
       // Definisikan mutations untuk mengubah state
-      CHANGE_USER(state, value) {
-         state.currentUser.image = {
-            png: `/images/avatars/image-${value}.png`,
-            webp: `/images/avatars/image-${value}.webp`
-         };
-         state.currentUser.username = value;
-         console.log(state.comments);
+      SET_USER(state, user) {
+         state.currentUser = user;
+      },
+      SET_COMMENTS(state, comments) {
+         state.comments = comments;
       },
 
       ADD_COMMENT(state, comment) {
-         if (state.comments.find((val) => val.id === comment.id)) {
-            comment.id = comment.id + 1;
-         }
-
          state.comments.push(comment);
       },
-      ADD_REPLY(state, { comment, id }) {
-         const data = state.comments.find((val) => val.id === id);
-
-         let existingReply = data.replies.find((val) => val.id === comment.id);
-
-         if (existingReply) {
-            // Jika ID sudah ada, cari ID yang unik dengan menambahkan angka di belakang ID
-            let uniqueId = comment.id;
-            let counter = 1;
-
-            while (existingReply) {
-               uniqueId = comment.id + counter;
-               existingReply = data.replies.find((val) => val.id === uniqueId);
-               counter++;
-            }
-
-            // Setel ID yang unik
-            comment.id = uniqueId;
-         }
-
-         data.replies.push(comment);
+      ADD_REPLY(state, { comment, commentId }) {
+         const foundComment = state.comments.find(
+            (val) => val.id === commentId
+         );
+         foundComment.replies.push(comment);
       },
-      UPDATE_COMMENT(state, { newValue, id }) {
-         const comment = state.comments.find((val) => val.id === id);
-
-         comment.content = newValue;
+      UPDATE_COMMENT(state, { content, commentId }) {
+         const foundComment = state.comments.find(
+            (val) => val.id === commentId
+         );
+         foundComment.content = content;
       },
-      UPDATE_REPLY(state, { newValue, commentId, replyId }) {
-         const comment = state.comments.find((val) => val.id === commentId);
-         const reply = comment.replies.find((val) => val.id === replyId);
-
-         reply.content = newValue;
+      UPDATE_REPLY(state, { content, commentId, replyId }) {
+         const foundComment = state.comments.find(
+            (val) => val.id === commentId
+         );
+         const reply = foundComment.replies.find((val) => val.id === replyId);
+         reply.content = content;
       },
-      DELETE_COMMENT(state, id) {
-         const comment = state.comments.findIndex((val) => val.id === id);
-
-         if (comment !== -1) {
-            state.comments.splice(comment, 1);
-         }
+      DELETE_COMMENT(state, commentId) {
+         state.comments = state.comments.filter(
+            (comment) => comment.id !== commentId
+         );
       },
-      DELETE_REPLY(state, { replyId, commentId }) {
-         const comment = state.comments.find((val) => val.id === commentId);
-         const reply = comment.replies.findIndex((val) => val.id === replyId);
-
-         if (reply !== -1) {
-            comment.replies.splice(reply, 1);
-         }
+      DELETE_REPLY(state, { commentId, replyId }) {
+         const foundComment = state.comments.find(
+            (val) => val.id === commentId
+         );
+         foundComment.replies = foundComment.replies.filter(
+            (reply) => reply.id !== replyId
+         );
       },
-      CONTROL_SCORE_COMMENT(state, { commentId, type }) {
-         const comment = state.comments.find(
-            (comment) => comment.id === commentId
+      ADD_COMMENT_SCORE(state, { commentId, userId }) {
+         const foundComment = state.comments.find(
+            (val) => val.id === commentId
+         );
+         const existingUserId = foundComment.score.find(
+            (val) => val === userId
          );
 
-         switch (type) {
-            case 'increase':
-               comment.score++;
-               break;
-            case 'decrease':
-               comment.score--;
-               break;
-         }
-      },
-      CONTROL_SCORE_REPLY(state, { commentId, replyId, type }) {
-         const comment = state.comments.find(
-            (comment) => comment.id === commentId
-         );
-         const reply = comment.replies.find((val) => val.id === replyId);
+         if (existingUserId) return;
 
-         switch (type) {
-            case 'increase':
-               reply.score++;
-               break;
-            case 'decrease':
-               reply.score--;
-               break;
-         }
+         foundComment.score.push(userId);
+      },
+      ADD_REPLY_SCORE(state, { commentId, replyId, userId }) {
+         const foundComment = state.comments.find(
+            (val) => val.id === commentId
+         );
+         const reply = foundComment.replies.find((val) => val.id === replyId);
+         const existingUserId = reply.score.find((val) => val === userId);
+
+         if (existingUserId) return;
+
+         reply.score.push(userId);
+      },
+      DELETE_COMMENT_SCORE(state, { commentId, userId }) {
+         const foundComment = state.comments.find(
+            (val) => val.id === commentId
+         );
+         foundComment.score = foundComment.score.filter(
+            (val) => val !== userId
+         );
+      },
+      DELETE_REPLY_SCORE(state, { commentId, replyId, userId }) {
+         const foundComment = state.comments.find(
+            (val) => val.id === commentId
+         );
+         const reply = foundComment.replies.find((val) => val.id === replyId);
+         reply.score = reply.score.filter((val) => val !== userId);
       }
    },
    actions: {
       // Definisikan actions untuk melakukan tugas async dan memanggil mutations
-      changeUser({ commit }, value) {
-         commit('CHANGE_USER', value);
+      setUser({ commit }, user) {
+         commit('SET_USER', user);
+         setItem('user', user);
+      },
+      setComments({ commit }, comments) {
+         commit('SET_COMENTS', comments);
+         setItem('comments', comments);
+      },
+      initializeStore({ commit }) {
+         const user = getItem('user');
+         if (user) {
+            commit('SET_USER', user);
+         } else {
+            commit('SET_USER', initialUser);
+            setItem('user', initialUser);
+         }
+
+         const comments = getItem('comments');
+         if (comments) {
+            commit('SET_COMMENTS', comments);
+         } else {
+            commit('SET_COMMENTS', initialComments);
+            setItem('comments', initialComments);
+         }
+      },
+      setCurrentUser({ commit }, user) {
+         commit('SET_CURRENTUSER', user);
+         setItem('user', this.state.currentUser);
       },
       addComment({ commit }, comment) {
          commit('ADD_COMMENT', comment);
+         setItem('comments', this.state.comments);
       },
-      addReply({ commit }, { comment, id }) {
-         commit('ADD_REPLY', { comment, id });
+      addReply({ commit }, { comment, commentId }) {
+         commit('ADD_REPLY', { comment, commentId });
+         setItem('comments', this.state.comments);
       },
-      updateComment({ commit }, { newValue, id }) {
-         commit('UPDATE_COMMENT', { newValue, id });
+      updateComment({ commit }, { content, commentId }) {
+         commit('UPDATE_COMMENT', { content, commentId });
+         setItem('comments', this.state.comments);
       },
-      updateReply({ commit }, { newValue, commentId, replyId }) {
-         commit('UPDATE_REPLY', { newValue, commentId, replyId });
+      updateReply({ commit }, { content, commentId, replyId }) {
+         commit('UPDATE_REPLY', { content, commentId, replyId });
+         setItem('comments', this.state.comments);
       },
-      deleteCommentAction({ commit }, id) {
-         commit('DELETE_COMMENT', id);
+      deleteComment({ commit }, commentId) {
+         commit('DELETE_COMMENT', commentId);
+         setItem('comments', this.state.comments);
       },
-      deleteReplyAction({ commit }, { replyId, commentId }) {
-         commit('DELETE_REPLY', { replyId, commentId });
+      deleteReply({ commit }, { commentId, replyId }) {
+         commit('DELETE_REPLY', { commentId, replyId });
+         setItem('comments', this.state.comments);
       },
-      controlScoreComment({ commit }, { commentId, type }) {
-         commit('CONTROL_SCORE_COMMENT', { commentId, type });
+      addCommentScore({ commit }, { commentId, userId }) {
+         commit('ADD_COMMENT_SCORE', { commentId, userId });
+         setItem('comments', this.state.comments);
       },
-      controlScoreReply({ commit }, { commentId, replyId, type }) {
-         commit('CONTROL_SCORE_REPLY', { commentId, replyId, type });
+      addReplyScore({ commit }, { commentId, replyId, userId }) {
+         commit('ADD_REPLY_SCORE', { commentId, replyId, userId });
+         setItem('comments', this.state.comments);
+      },
+      deleteCommentScore({ commit }, { commentId, userId }) {
+         commit('DELETE_COMMENT_SCORE', { commentId, userId });
+         setItem('comments', this.state.comments);
+      },
+      deleteReplyScore({ commit }, { commentId, replyId, userId }) {
+         commit('DELETE_REPLY_SCORE', { commentId, replyId, userId });
+         setItem('comments', this.state.comments);
       }
    },
    getters: {
       // Definisikan getters untuk mendapatkan state secara terpusat
-
-      getRepliesLength: (state) => (commentId) => {
-         const comment = state.comments.find((val) => val.id === commentId);
-
-         if (comment && comment.replies) {
-            return comment.replies.length;
-         }
-         return 0; // Jika reply tidak ditemukan, mengembalikan panjang 0
+      getUsername(state) {
+         return state.currentUser.username;
       }
    }
 });
