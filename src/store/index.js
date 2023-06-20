@@ -166,9 +166,6 @@ const store = new createStore({
    },
    getters: {
       // Definisikan getters untuk mendapatkan state secara terpusat
-      getUsername(state) {
-         return state.currentUser.username;
-      }
    }
 });
 

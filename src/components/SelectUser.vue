@@ -12,7 +12,7 @@ export default {
       ...mapState(['currentUser'])
    },
    methods: {
-      ...mapActions(['setCurrentUser', 'setUser']),
+      ...mapActions(['setUser']),
 
       setUserMethod(value) {
          const payload = {
